@@ -59,4 +59,37 @@ public class Dao {
 		}		
 		return autot;
 	}
+	
+	public ArrayList<MalliAuto> listaaKaikki(String hakusana){
+		ArrayList<MalliAuto> autot = new ArrayList<MalliAuto>();
+		sql = "SELECT * FROM autot WHERE rekno LIKE ? or merkki LIKE ? or malli LIKE ?";       
+		try {
+			con=yhdista();
+			if(con!=null){ //jos yhteys onnistui
+				stmtPrep = con.prepareStatement(sql);
+				stmtPrep.setString(1, "%" + hakusana + "%");
+				stmtPrep.setString(2, "%" + hakusana + "%");
+				stmtPrep.setString(3, "%" + hakusana + "%");
+        		rs = stmtPrep.executeQuery();   
+				if(rs!=null){ //jos kysely onnistui
+					//con.close();	
+					//Jos tietoa löytyi tehdään ensin auto-olio
+					//Annetaan sille arvot
+					//Työnnetään luotu Auto add-metodilla arraylistiin
+					while(rs.next()){
+						MalliAuto auto = new MalliAuto();
+						auto.setRekno(rs.getString(1)); //Hae taulun ensimmäisestä sarakkeesta arvo ja aseta se reknro paikalle
+						auto.setMerkki(rs.getString(2)); //Hae taulun toisesta sarakkeesta arvo ja aseta se merkin paikalle
+						auto.setMalli(rs.getString(3));	 //Hae taulun kolmannesta sarakkeesta arvo ja aseta se mallin paikalle
+						auto.setVuosi(rs.getInt(4));	//Hae taulun neljännestä sarakkeesta arvo ja aseta se vuoden paikalle
+						autot.add(auto);
+					}					
+				}				
+			}	
+			con.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}		
+		return autot;
+	}
 }
